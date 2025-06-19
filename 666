@@ -1,0 +1,40 @@
+pip install python-telegram-bot
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+
+# Команда /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Привет! Я ваш простой Telegram-бот. Напишите мне что-нибудь!")
+
+# Команда /help
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Я могу отвечать на сообщения и реагировать на команды. Вот что я умею:\n"
+                                    "/start - Начать общение со мной\n"
+                                    "/help - Получить помощь")
+
+# Ответ на текстовые сообщения
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_message = update.message.text
+    await update.message.reply_text(f"Вы написали: {user_message}")
+
+# Основная функция
+def main():
+    # Укажите ваш токен API
+    TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"  # Замените на ваш токен
+
+    # Создаем приложение
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    # Обработчики команд
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+
+    # Обработчик сообщений
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    # Запускаем бота
+    print("Бот запущен!")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
